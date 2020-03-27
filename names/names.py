@@ -1,3 +1,4 @@
+from bisect import bisect_left
 import time
 
 
@@ -96,5 +97,39 @@ for name in names_1:
         duplicates.append(name)
 end_time = time.time()
 print(
-    f"Builtin set: {len(duplicates)} duplicates:\n\n{', '.join(duplicates)}\n\n")
+    f"Builtin set (Fastest): {len(duplicates)} duplicates:\n\n{', '.join(duplicates)}\n\n")
+print(f"runtime: {end_time - start_time} seconds")
+
+
+# Space efficient stretch
+start_time = time.time()
+
+f = open('names_1.txt', 'r')
+names_1 = f.read().split("\n")  # List containing 10000 names
+f.close()
+
+f = open('names_2.txt', 'r')
+names_2 = f.read().split("\n")  # List containing 10000 names
+f.close()
+# O(n log n), builtin sort
+names_1.sort()
+
+# Similar to binary search: O(log n)
+
+
+def is_duplicate(main_list, item):
+    '''check if item in a given sorted list main_list
+    O(log n ) similar to binary search
+    '''
+    idx = bisect_left(main_list, item)
+    if idx < len(main_list) and main_list[idx] == item:
+        return True
+    return False
+
+
+# total runtime: O(n log n)
+duplicates = [n for n in names_2 if is_duplicate(names_1, n)]
+end_time = time.time()
+print(
+    f"In-place sort bisect (least storage): {len(duplicates)} duplicates:\n\n{', '.join(duplicates)}\n\n")
 print(f"runtime: {end_time - start_time} seconds")
